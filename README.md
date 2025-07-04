@@ -17,6 +17,21 @@ PhantomRAT is a powerful Android Remote Access Tool (RAT) designed for ethical h
 
 ![Tool Screenshot](screenshot.jpg)
 
+## ⚠️ Disclaimer
+This tool is intended for educational purposes only. The developer is not responsible for any misuse or damage caused by this tool.
+
+By using this tool, you agree that:
+You have proper authorization to test.
+You will not use it for illegal activities.
+
+## ⚙️ Requirements
+Before running PhantomRAT, make sure the following dependencies are installed on your system:
+
+- Python 3.8+
+- Metaspoilt
+- Apksigner
+- Zipalign
+- 
 ## 📥 Installation
 
 ```bash
