@@ -13,10 +13,15 @@ PhantomRAT is a powerful Android Remote Access Tool (RAT) designed for ethical h
 
 ---
 
+## 📸 Screenshot
+
+![Tool Screenshot](screenshots/screenshot1.png)
+
 ## 📥 Installation
 
 ```bash
-git clone https://github.com/YourUsername/PhantomRAT
+git clone https://github.com/Ritusmin325k/PhantomRAT.git
 cd PhantomRAT
 pip install -r requirements.txt
 python3 rat2.py
+
