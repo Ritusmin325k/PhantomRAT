@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.jpg" width="230" alt="PhantomRAT Logo">
+  <img src="logo.jpg" width="260" height="260" alt="PhantomRAT Logo">
 </p>
 
 # PhantomRAT
@@ -31,7 +31,7 @@ Before running PhantomRAT, make sure the following dependencies are installed on
 - Metaspoilt
 - Apksigner
 - Zipalign
-- 
+
 ## 📥 Installation
 
 ```bash
