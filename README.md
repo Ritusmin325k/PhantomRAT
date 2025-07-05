@@ -36,7 +36,7 @@ PhantomRAT is a powerful Android Remote Access Tool (RAT) designed for ethical h
 
 ## 📸 Screenshot
 
-![Tool Screenshot](screenshot.jpg)
+![Tool Screenshot](screenshot1.jpg)
 
 ## ⚠️ Disclaimer
 This tool is intended for educational purposes only. The developer is not responsible for any misuse or damage caused by this tool.
